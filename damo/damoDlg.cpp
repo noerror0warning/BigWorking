@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CdamoDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_OPEN, &CdamoDlg::OnBnClickedButtonOpen)
+	ON_BN_CLICKED(IDC_BUTTON_OPERATE, &CdamoDlg::OnBnClickedButtonOperate)
 END_MESSAGE_MAP()
 
 
@@ -106,7 +107,31 @@ BOOL CdamoDlg::OnInitDialog()
 	CComboBox* cmb_open = ((CComboBox*)GetDlgItem(IDC_COMBO_PICTURE));
 	cmb_open->InsertString(0, _T("上图"));
 	cmb_open->InsertString(1, _T("下图"));
+	cmb_open->InsertString(2, _T("视频"));
 	cmb_open->SetCurSel(0);
+
+	CComboBox* cmb_operation = ((CComboBox*)GetDlgItem(IDC_COMBO_OPERATION));
+	cmb_operation->InsertString(0, _T("验证FERNS"));
+	cmb_operation->InsertString(1, _T("点对映射"));
+	cmb_operation->InsertString(2, _T("几何矫正"));
+	cmb_operation->InsertString(3, _T("图像拼接"));
+	cmb_operation->InsertString(4, _T("目标检测"));
+	cmb_operation->InsertString(5, _T("视频的实时特征检测与可视化"));
+	cmb_operation->SetCurSel(0);
+
+	CComboBox* cmb_detection = ((CComboBox*)GetDlgItem(IDC_COMBO_DETECTION));
+	cmb_detection->InsertString(0, _T("SIFT"));
+	cmb_detection->InsertString(1, _T("SURF"));
+	cmb_detection->SetCurSel(0);
+
+	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
+	cmb_mapping->InsertString(0, _T("BruteForce"));
+	cmb_mapping->InsertString(1, _T("FLANN"));
+	cmb_mapping->InsertString(2, _T("RANSAC"));
+	cmb_mapping->InsertString(3, _T("Hough Cluster"));
+	cmb_mapping->SetCurSel(0);
+
+
 
 	CWnd* pWnd1 = GetDlgItem(IDC_PICTURE1);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd1->GetClientRect(&rect1);//GetClientRect为获得控件相自身的坐标大小
@@ -188,6 +213,49 @@ HCURSOR CdamoDlg::OnQueryDragIcon()
 }
 
 
+/*
+	这是显示照片的函数
+	number 代表哪一个窗口，1、2、3分别是上下右3个窗口
+	pic 是要显示的图片
+	这个函数显示时会自适应缩小过大的图片，但是不会改变原图的大小
+*/
+void CdamoDlg::showPicture(int number, Mat pic){
+	String window;
+	CRect rect;
+	switch (number){
+	case 1: {
+		window = "src1";
+		rect = rect1;
+		break;
+	}
+	case 2: {
+		window = "src2";
+		rect = rect2;
+		break;
+	}
+	case 3: {
+		window = "src3";
+		rect = rect3;
+		break;
+	}
+	default:
+		break;
+	}
+	double w = rect.Width();
+	double h = rect.Height();
+	double scaleRate = h / pic.rows;
+	if (scaleRate > w / pic.cols)
+		scaleRate = w / pic.cols;
+	int rows = int(pic.rows * scaleRate);
+	int cols = int(pic.cols * scaleRate);
+	if (scaleRate < 1) {				//如果超出范围就复制到小图再显示
+		Mat showP;
+		resize(pic, showP, Size(cols, rows));
+		imshow(window, showP);
+	}
+	else
+		imshow(window, pic);
+}
 
 void CdamoDlg::OnBnClickedButtonOpen(){
 	// TODO: 在此添加控件通知处理程序代码
@@ -210,21 +278,7 @@ void CdamoDlg::OnBnClickedButtonOpen(){
 			USES_CONVERSION;
 			char* s = T2A(strFilePath);
 			image1 = imread(s);
-			double w = rect1.Width();
-			double h = rect1.Height();
-			double scaleRate = h / double(image1.rows);
-			if (scaleRate > double(w / image1.cols))
-				scaleRate = double(w / image1.cols);
-
-			int rows = int(image1.rows * scaleRate);
-			int cols = int(image1.cols * scaleRate);
-
-			if(scaleRate<1)
-				resize(image1, image1, Size(cols,rows));
-			//Mat big(image1.rows, image1.cols * 2, image1.type());
-			//Mat roi = big(Rect(0, 0, image1.rows, image1.cols));
-			//image1.copyTo(roi);
-			imshow("src1", image1);
+			showPicture(1, image1);
 		}
 		break;
 	}
@@ -242,22 +296,118 @@ void CdamoDlg::OnBnClickedButtonOpen(){
 			USES_CONVERSION;
 			char* s = T2A(strFilePath);
 			image2 = imread(s);
-			double w = rect2.Width();
-			double h = rect2.Height();
-			double scaleRate = h / image2.rows;
-			if (scaleRate > w / image2.cols)
-				scaleRate = w / image2.cols;
-			int rows = int(image2.rows * scaleRate);
-			int cols = int(image2.cols * scaleRate);
-			if (scaleRate < 1)
-				resize(image2, image2, Size(cols,rows));
-
-			imshow("src2", image2);
+			showPicture(2, image2);
 		}
+		break;
+	}
+	case 2: {//视频
 		break;
 	}
 	default:
 		break;
 	}
 
+}
+
+
+void CdamoDlg::OnBnClickedButtonOperate()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CComboBox* cmb_oper = ((CComboBox*)GetDlgItem(IDC_COMBO_OPERATION));
+	int oper = cmb_oper->GetCurSel();
+	switch (oper){
+	//验证FERNS
+	case 0: {
+		verifyFERNS();
+		break;
+	}
+	//点对映射
+	case 1: {
+		pointMapping();
+		break;
+	}
+	//几何矫正
+	case 2: {
+		geometricCorrection();
+		break;
+	}
+	//图像拼接
+	case 3: {
+		imageMosaic();
+		break;
+	}
+	//目标检测
+	case 4: {
+		targetDetection();
+		break;
+	}
+	//视频的实时特征检测与可视化
+	case 5: {
+		videoFeature();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+//验证FERNS
+void CdamoDlg::verifyFERNS(){
+}
+
+//点对映射
+void CdamoDlg::pointMapping(){
+	CComboBox* cmb_detection = ((CComboBox*)GetDlgItem(IDC_COMBO_DETECTION));
+	int detection = cmb_detection->GetCurSel();
+	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
+	int mapping = cmb_mapping->GetCurSel();
+	/*
+		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
+		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	*/
+	//下面开始实现
+}
+
+//几何矫正
+void CdamoDlg::geometricCorrection(){
+	CComboBox* cmb_detection = ((CComboBox*)GetDlgItem(IDC_COMBO_DETECTION));
+	int detection = cmb_detection->GetCurSel();
+	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
+	int mapping = cmb_mapping->GetCurSel();
+	/*
+		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
+		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	*/
+	//下面开始实现
+}
+
+//图像拼接
+void CdamoDlg::imageMosaic(){
+	CComboBox* cmb_detection = ((CComboBox*)GetDlgItem(IDC_COMBO_DETECTION));
+	int detection = cmb_detection->GetCurSel();
+	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
+	int mapping = cmb_mapping->GetCurSel();
+	/*
+		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
+		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	*/
+	//下面开始实现
+}
+
+//目标检测
+void CdamoDlg::targetDetection(){
+	CComboBox* cmb_detection = ((CComboBox*)GetDlgItem(IDC_COMBO_DETECTION));
+	int detection = cmb_detection->GetCurSel();
+	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
+	int mapping = cmb_mapping->GetCurSel();
+	/*
+		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
+		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	*/
+	//下面开始实现
+
+}
+
+//视频的实时特征检测与可视化
+void CdamoDlg::videoFeature(){
 }

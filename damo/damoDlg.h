@@ -42,5 +42,13 @@ public:
 	Mat image1;
 	Mat image2;
 	Mat image3;
+	void showPicture(int number, Mat pic);
 	afx_msg void OnBnClickedButtonOpen();
+	afx_msg void OnBnClickedButtonOperate();
+	void verifyFERNS();
+	void pointMapping();
+	void geometricCorrection();
+	void imageMosaic();
+	void targetDetection();
+	void videoFeature();
 };
