@@ -131,6 +131,9 @@ BOOL CdamoDlg::OnInitDialog()
 	cmb_mapping->InsertString(3, _T("Hough Cluster"));
 	cmb_mapping->SetCurSel(0);
 
+	isImage1Exist = false;
+	isImage2Exist = false;
+	isImage3Exist = false;
 
 
 	CWnd* pWnd1 = GetDlgItem(IDC_PICTURE1);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
@@ -279,6 +282,7 @@ void CdamoDlg::OnBnClickedButtonOpen(){
 			char* s = T2A(strFilePath);
 			image1 = imread(s);
 			showPicture(1, image1);
+			isImage1Exist = true;
 		}
 		break;
 	}
@@ -297,6 +301,7 @@ void CdamoDlg::OnBnClickedButtonOpen(){
 			char* s = T2A(strFilePath);
 			image2 = imread(s);
 			showPicture(2, image2);
+			isImage2Exist = true;
 		}
 		break;
 	}
@@ -353,6 +358,13 @@ void CdamoDlg::OnBnClickedButtonOperate()
 
 //验证FERNS
 void CdamoDlg::verifyFERNS(){
+	/*
+		可以用isImage1Exist、isImage2Exist来判断图片是否已经打开，避免传入空图
+		空图的话可以用下面这个发出警报然后再return
+		CString timeStr;
+		timeStr.Format(_T("图片未打开"));
+		AfxMessageBox(timeStr);
+	*/
 }
 
 //点对映射
@@ -364,6 +376,12 @@ void CdamoDlg::pointMapping(){
 	/*
 		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
 		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	
+		可以用isImage1Exist、isImage2Exist来判断图片是否已经打开，避免传入空图
+		空图的话可以用下面这个发出警报然后再return
+		CString timeStr;
+		timeStr.Format(_T("图片未打开"));
+		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
 }
@@ -377,6 +395,12 @@ void CdamoDlg::geometricCorrection(){
 	/*
 		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
 		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	
+		可以用isImage1Exist、isImage2Exist来判断图片是否已经打开，避免传入空图
+		空图的话可以用下面这个发出警报然后再return
+		CString timeStr;
+		timeStr.Format(_T("图片未打开"));
+		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
 }
@@ -390,6 +414,12 @@ void CdamoDlg::imageMosaic(){
 	/*
 		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
 		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	
+		可以用isImage1Exist、isImage2Exist来判断图片是否已经打开，避免传入空图
+		空图的话可以用下面这个发出警报然后再return
+		CString timeStr;
+		timeStr.Format(_T("图片未打开"));
+		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
 }
@@ -403,6 +433,12 @@ void CdamoDlg::targetDetection(){
 	/*
 		detection 是特征检测方法 0是SIFT，1是SURF（两个都要实现）
 		mapping   是特征点匹配方法 0-3分别是BruteForce， FLANN， RANSAC，Hough Cluster（至少实现其二）
+	
+		可以用isImage1Exist、isImage2Exist来判断图片是否已经打开，避免传入空图
+		空图的话可以用下面这个发出警报然后再return
+		CString timeStr;
+		timeStr.Format(_T("图片未打开"));
+		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
 
