@@ -7,7 +7,7 @@
 #include "damo.h"
 #include "damoDlg.h"
 #include "afxdialogex.h"
-
+#include"ImageProcess.h"
 
 
 #ifdef _DEBUG
@@ -384,6 +384,27 @@ void CdamoDlg::pointMapping(){
 		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
+
+	if (!isImage1Exist) {
+		CString timeStr;
+		timeStr.Format(_T("图片1未打开，请先打开上图"));
+		AfxMessageBox(timeStr);
+		return;
+	}
+
+	if (!isImage2Exist) {
+		CString timeStr;
+		timeStr.Format(_T("图片2未打开，请先打开下图"));
+		AfxMessageBox(timeStr);
+		return;
+	}
+
+	Mat out1, out2;
+	pointMappingProcess(image1, image2, out1, out2, image3, detection, mapping);
+	isImage3Exist = true;
+	showPicture(1, out1);
+	showPicture(2, out2);
+	showPicture(3, image3);
 }
 
 //几何矫正
