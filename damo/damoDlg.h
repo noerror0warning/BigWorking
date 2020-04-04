@@ -46,6 +46,7 @@ public:
 	bool isImage1Exist;
 	bool isImage2Exist;
 	bool isImage3Exist;
+	void showBlock(int number);
 	void showPicture(int number, Mat pic);
 	afx_msg void OnBnClickedButtonOpen();
 	afx_msg void OnBnClickedButtonOperate();

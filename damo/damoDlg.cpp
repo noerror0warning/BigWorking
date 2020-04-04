@@ -146,7 +146,7 @@ BOOL CdamoDlg::OnInitDialog()
 	::SetParent(hWndl1, GetDlgItem(IDC_PICTURE1)->m_hWnd);
 	::ShowWindow(hParent11, SW_HIDE);
 	resize(block, block, Size(rect1.Width(), rect1.Height()));
-	showPicture(1, block);
+	showBlock(1);
 
 	CWnd* pWnd12 = GetDlgItem(IDC_PICTURE2);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd12->GetClientRect(&rect2);//GetClientRect为获得控件相自身的坐标大小
@@ -157,7 +157,7 @@ BOOL CdamoDlg::OnInitDialog()
 	::SetParent(hWndl2, GetDlgItem(IDC_PICTURE2)->m_hWnd);
 	::ShowWindow(hParent12, SW_HIDE);
 	resize(block, block, Size(rect2.Width(), rect2.Height()));
-	showPicture(2, block);
+	showBlock(2);
 
 	CWnd* pWnd13 = GetDlgItem(IDC_PICTURE3);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd13->GetClientRect(&rect3);//GetClientRect为获得控件相自身的坐标大小
@@ -168,7 +168,7 @@ BOOL CdamoDlg::OnInitDialog()
 	::SetParent(hWndl3, GetDlgItem(IDC_PICTURE3)->m_hWnd);
 	::ShowWindow(hParent13, SW_HIDE);
 	resize(block, block, Size(rect3.Width(), rect3.Height()));
-	showPicture(3, block);
+	showBlock(3);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -223,6 +223,33 @@ HCURSOR CdamoDlg::OnQueryDragIcon()
 }
 
 
+
+
+void CdamoDlg::showBlock(int number){
+	String window;
+	CRect rect;
+	switch (number) {
+	case 1: {
+		window = "src1";
+		rect = rect1;
+		break;
+	}
+	case 2: {
+		window = "src2";
+		rect = rect2;
+		break;
+	}
+	case 3: {
+		window = "src3";
+		rect = rect3;
+		break;
+	}
+	default:
+		break;
+	}
+	imshow(window, block);
+}
+
 /*
 	这是显示照片的函数
 	number 代表哪一个窗口，1、2、3分别是上下右3个窗口
@@ -251,8 +278,7 @@ void CdamoDlg::showPicture(int number, Mat pic){
 	default:
 		break;
 	}
-	resize(block, block, Size(rect.Width(), rect.Height()));
-	imshow(window, block);
+
 	double w = rect.Width();
 	double h = rect.Height();
 	double scaleRate = h / pic.rows;
@@ -265,8 +291,10 @@ void CdamoDlg::showPicture(int number, Mat pic){
 		resize(pic, showP, Size(cols, rows));
 		imshow(window, showP);
 	}
-	else
+	else {
 		imshow(window, pic);
+	}
+
 }
 
 void CdamoDlg::OnBnClickedButtonOpen(){
