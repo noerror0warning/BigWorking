@@ -42,6 +42,7 @@ public:
 	Mat image1;
 	Mat image2;
 	Mat image3;
+	Mat block;
 	bool isImage1Exist;
 	bool isImage2Exist;
 	bool isImage3Exist;

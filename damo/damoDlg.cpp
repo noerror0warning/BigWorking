@@ -135,6 +135,7 @@ BOOL CdamoDlg::OnInitDialog()
 	isImage2Exist = false;
 	isImage3Exist = false;
 
+	block = Mat(4, 4, CV_8UC3, Scalar(255, 255, 255));
 
 	CWnd* pWnd1 = GetDlgItem(IDC_PICTURE1);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd1->GetClientRect(&rect1);//GetClientRect为获得控件相自身的坐标大小
@@ -144,6 +145,8 @@ BOOL CdamoDlg::OnInitDialog()
 	HWND hParent11 = ::GetParent(hWndl1);//GetParent函数一个指定子窗口的父窗口句柄
 	::SetParent(hWndl1, GetDlgItem(IDC_PICTURE1)->m_hWnd);
 	::ShowWindow(hParent11, SW_HIDE);
+	resize(block, block, Size(rect1.Width(), rect1.Height()));
+	showPicture(1, block);
 
 	CWnd* pWnd12 = GetDlgItem(IDC_PICTURE2);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd12->GetClientRect(&rect2);//GetClientRect为获得控件相自身的坐标大小
@@ -153,6 +156,8 @@ BOOL CdamoDlg::OnInitDialog()
 	HWND hParent12 = ::GetParent(hWndl2);//GetParent函数一个指定子窗口的父窗口句柄
 	::SetParent(hWndl2, GetDlgItem(IDC_PICTURE2)->m_hWnd);
 	::ShowWindow(hParent12, SW_HIDE);
+	resize(block, block, Size(rect2.Width(), rect2.Height()));
+	showPicture(2, block);
 
 	CWnd* pWnd13 = GetDlgItem(IDC_PICTURE3);//CWnd是MFC窗口类的基类,提供了微软基础类库中所有窗口类的基本功能。
 	pWnd13->GetClientRect(&rect3);//GetClientRect为获得控件相自身的坐标大小
@@ -162,6 +167,8 @@ BOOL CdamoDlg::OnInitDialog()
 	HWND hParent13 = ::GetParent(hWndl3);//GetParent函数一个指定子窗口的父窗口句柄
 	::SetParent(hWndl3, GetDlgItem(IDC_PICTURE3)->m_hWnd);
 	::ShowWindow(hParent13, SW_HIDE);
+	resize(block, block, Size(rect3.Width(), rect3.Height()));
+	showPicture(3, block);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -244,6 +251,8 @@ void CdamoDlg::showPicture(int number, Mat pic){
 	default:
 		break;
 	}
+	resize(block, block, Size(rect.Width(), rect.Height()));
+	imshow(window, block);
 	double w = rect.Width();
 	double h = rect.Height();
 	double scaleRate = h / pic.rows;
@@ -482,7 +491,26 @@ void CdamoDlg::targetDetection(){
 		AfxMessageBox(timeStr);
 	*/
 	//下面开始实现
+	if (!isImage1Exist) {
+		CString timeStr;
+		timeStr.Format(_T("图片1未打开，请先打开上图"));
+		AfxMessageBox(timeStr);
+		return;
+	}
 
+	if (!isImage2Exist) {
+		CString timeStr;
+		timeStr.Format(_T("图片2未打开，请先打开下图"));
+		AfxMessageBox(timeStr);
+		return;
+	}
+
+	Mat out1, out2;
+	targetDetectionProcess(image1, image2, out1, out2, image3, detection, mapping);
+	isImage3Exist = true;
+	showPicture(1, out1);
+	showPicture(2, out2);
+	showPicture(3, image3);
 }
 
 //视频的实时特征检测与可视化
