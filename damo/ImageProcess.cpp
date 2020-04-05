@@ -2,6 +2,16 @@
 #include "ImageProcess.h"
 
 
+Point2f getTransformPoint(const Point2f originalPoint, const Mat &transformMaxtri)
+{
+	Mat originalP, targetP;
+	originalP = (Mat_<double>(3, 1) << originalPoint.x, originalPoint.y, 1.0);
+	targetP = transformMaxtri * originalP;
+	float x = targetP.at<double>(0, 0) / targetP.at<double>(2, 0);
+	float y = targetP.at<double>(1, 0) / targetP.at<double>(2, 0);
+	return Point2f(x, y);
+}
+
 
 void pointMappingProcess(Mat& image1, Mat& image2, Mat& image1Out, Mat& image2Out, Mat& out, int detection, int mapping){
 	vector<KeyPoint>keypoints1, keypoints2;
@@ -141,12 +151,65 @@ void geometricCorrectionProcess(Mat &image1, Mat &image2, Mat &image1Out, Mat &i
 		points1.push_back(keypoints1[matches[i].queryIdx].pt);
 		points2.push_back(keypoints2[matches[i].trainIdx].pt);
 	}
+	cout << matches.size();
 
 	Mat homo = findHomography(points2, points1, RANSAC);
 
 	warpPerspective(image2, out, homo, image1.size());
 }
 
+//图像拼接
+void imageMosaicProcess(Mat &image1, Mat &image2, Mat &image1Out, Mat &image2Out, Mat &out, int detection, int mapping)
+{
+	vector<KeyPoint>keypoints1, keypoints2;
+	vector<DMatch>matches;
+
+	pointMappingProcess(image1, image2, image1Out, image2Out, out, detection, mapping, keypoints1, keypoints2, matches);
+
+	vector<Point2f> points1, points2;
+
+	//获得前N个最优匹配特征点
+	for (int i = 0; i < 10; i++)
+	{
+		points1.push_back(keypoints1[matches[i].queryIdx].pt);
+		points2.push_back(keypoints2[matches[i].trainIdx].pt);
+	}
+
+	Mat homo = findHomography(points1, points2, RANSAC);//求单应型矩阵
+	Mat adjustMat = (Mat_<double>(3, 3) << 1.0, 0, image1.cols, 0, 1.0, 0, 0, 0, 1.0);
+	Mat adjustHomo = adjustMat * homo;
+
+	//矩阵变换
+	Point2f oriLinkePoint, tarLinkPoint, baseImagePoint;
+	oriLinkePoint = keypoints1[matches[0].queryIdx].pt;
+	tarLinkPoint = getTransformPoint(oriLinkePoint, adjustHomo);
+	baseImagePoint = keypoints2[matches[0].trainIdx].pt;
+
+	//图像配准
+	warpPerspective(image1, out, adjustHomo, Size(image2.cols + image1.cols + 10, image2.rows));
+
+	//消除突变
+	Mat image1Overlap, image2Overlap;
+	image1Overlap = out(Rect(Point(tarLinkPoint.x - baseImagePoint.x, 0), Point(tarLinkPoint.x, image2.rows)));
+	image2Overlap = image2(Rect(0, 0, image1Overlap.cols, image1Overlap.rows));
+	Mat image1ROICopy = image1Overlap.clone();  
+	for (int i = 0; i < image1Overlap.rows; i++)
+	{
+		for (int j = 0; j < image1Overlap.cols; j++)
+		{
+			double weight;
+			weight = (double)j / image1Overlap.cols;  
+			image1Overlap.at<Vec3b>(i, j)[0] = (1 - weight)*image1ROICopy.at<Vec3b>(i, j)[0] + weight * image2Overlap.at<Vec3b>(i, j)[0];
+			image1Overlap.at<Vec3b>(i, j)[1] = (1 - weight)*image1ROICopy.at<Vec3b>(i, j)[1] + weight * image2Overlap.at<Vec3b>(i, j)[1];
+			image1Overlap.at<Vec3b>(i, j)[2] = (1 - weight)*image1ROICopy.at<Vec3b>(i, j)[2] + weight * image2Overlap.at<Vec3b>(i, j)[2];
+		}
+	}
+
+	//衔接
+	Mat ROIMat = image2(Rect(Point(baseImagePoint.x, 0), Point(image2.cols, image2.rows)));
+	ROIMat.copyTo(Mat(out, Rect(tarLinkPoint.x, 0, image2.cols - baseImagePoint.x + 1, image2.rows)));
+	
+}
 //目标检测
 void targetDetectionProcess(Mat& image1, Mat& image2, Mat& image1Out, Mat& image2Out, Mat& out, int detection, int mapping)
 {
@@ -165,7 +228,7 @@ void targetDetectionProcess(Mat& image1, Mat& image2, Mat& image1Out, Mat& image
 		points1.push_back(keypoints1[matches[i].queryIdx].pt);
 		points2.push_back(keypoints2[matches[i].trainIdx].pt);
 	}
-
+	//cout << matches.size();
 	Mat homo = findHomography(points1, points2, RANSAC);
 
 	//使用perspectiveTransform映射点群，在场景中获取目标位置
@@ -186,3 +249,4 @@ void targetDetectionProcess(Mat& image1, Mat& image2, Mat& image1Out, Mat& image
 
 
 }
+

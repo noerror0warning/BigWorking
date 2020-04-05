@@ -23,7 +23,7 @@
     <ProjectGuid>{A3BD450A-B8FC-4243-8686-61BE34A3EFFD}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
     <RootNamespace>damo</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -44,7 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
@@ -79,8 +79,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\environment\opencv\include;D:\environment\opencv\include\opencv2;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\environment\opencv\x64\vc16\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Program Files\opencv341-install\install\include;D:\Program Files\opencv341-install\install\include\opencv2;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Program Files\opencv341-install\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,13 +117,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>E:\soft\relyOnVS\OCL_SDK_Light\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>opencv_aruco420d.lib;opencv_bgsegm420d.lib;opencv_bioinspired420d.lib;opencv_calib3d420d.lib;opencv_ccalib420d.lib;opencv_core420d.lib;opencv_datasets420d.lib;opencv_dnn420d.lib;opencv_dnn_objdetect420d.lib;opencv_dnn_superres420d.lib;opencv_dpm420d.lib;opencv_face420d.lib;opencv_features2d420d.lib;opencv_flann420d.lib;opencv_fuzzy420d.lib;opencv_gapi420d.lib;opencv_hfs420d.lib;opencv_highgui420d.lib;opencv_imgcodecs420d.lib;opencv_imgproc420d.lib;opencv_img_hash420d.lib;opencv_line_descriptor420d.lib;opencv_ml420d.lib;opencv_objdetect420d.lib;opencv_optflow420d.lib;opencv_phase_unwrapping420d.lib;opencv_photo420d.lib;opencv_plot420d.lib;opencv_quality420d.lib;opencv_reg420d.lib;opencv_rgbd420d.lib;opencv_saliency420d.lib;opencv_shape420d.lib;opencv_stereo420d.lib;opencv_structured_light420d.lib;opencv_surface_matching420d.lib;opencv_text420d.lib;opencv_tracking420d.lib;opencv_video420d.lib;opencv_videoio420d.lib;opencv_xfeatures2d420d.lib;opencv_ximgproc420d.lib;opencv_xobjdetect420d.lib;opencv_xphoto420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\soft\relyOnVS\OCL_SDK_Light\lib\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_aruco341d.lib;opencv_bgsegm341d.lib;opencv_bioinspired341d.lib;opencv_calib3d341d.lib;opencv_ccalib341d.lib;opencv_core341d.lib;opencv_datasets341d.lib;opencv_dnn341d.lib;opencv_dnn_objdetect341d.lib;opencv_dpm341d.lib;opencv_face341d.lib;opencv_features2d341d.lib;opencv_flann341d.lib;opencv_fuzzy341d.lib;opencv_hfs341d.lib;opencv_highgui341d.lib;opencv_imgcodecs341d.lib;opencv_imgproc341d.lib;opencv_img_hash341d.lib;opencv_line_descriptor341d.lib;opencv_ml341d.lib;opencv_objdetect341d.lib;opencv_optflow341d.lib;opencv_phase_unwrapping341d.lib;opencv_photo341d.lib;opencv_plot341d.lib;opencv_reg341d.lib;opencv_saliency341d.lib;opencv_shape341d.lib;opencv_stereo341d.lib;opencv_stitching341d.lib;opencv_structured_light341d.lib;opencv_superres341d.lib;opencv_surface_matching341d.lib;opencv_text341d.lib;opencv_tracking341d.lib;opencv_video341d.lib;opencv_videoio341d.lib;opencv_videostab341d.lib;opencv_viz341d.lib;opencv_xfeatures2d341d.lib;opencv_ximgproc341d.lib;opencv_xobjdetect341d.lib;opencv_xphoto341d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
