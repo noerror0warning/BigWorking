@@ -127,8 +127,8 @@ BOOL CdamoDlg::OnInitDialog()
 	CComboBox* cmb_mapping = ((CComboBox*)GetDlgItem(IDC_COMBO_MAPPING));
 	cmb_mapping->InsertString(0, _T("BruteForce"));
 	cmb_mapping->InsertString(1, _T("FLANN"));
-	cmb_mapping->InsertString(2, _T("RANSAC"));
-	cmb_mapping->InsertString(3, _T("Hough Cluster"));
+	//cmb_mapping->InsertString(2, _T("RANSAC"));
+	//cmb_mapping->InsertString(3, _T("Hough Cluster"));
 	cmb_mapping->SetCurSel(0);
 
 	isImage1Exist = false;
